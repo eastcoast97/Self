@@ -1,0 +1,22 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  line-height: 10pt;
+  background-color: black;
+  color:green;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12pt;
+  position: relative;
+  left: 100px;
+  
+}
+
+canvas {
+  display: block;
+}
+
+/* video{
+
+  width: 88px;
+  height: 88px;
+} */
