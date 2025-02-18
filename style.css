@@ -175,8 +175,28 @@ html, body {
   animation: pulse 1s infinite;
 }
 
+.controls {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
 .stop-btn, .download-btn {
   display: none;
+}
+
+@media (max-width: 768px) {
+  .controls {
+    gap: 15px;
+  }
+  
+  .control-button {
+    width: 44px;
+    height: 44px;
+    font-size: 16px;
+  }
 }
 
 .recording .stop-btn {

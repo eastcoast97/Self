@@ -94,50 +94,75 @@ function setupRecordingControls() {
   
   function startRecording() {
     recordedChunks = [];
-    const stream = canvas.captureStream(30);
-    mediaRecorder = new MediaRecorder(stream, {
-      mimeType: 'video/webm;codecs=vp9'
-    });
-    
-    mediaRecorder.ondataavailable = (e) => {
-      if (e.data.size > 0) {
-        recordedChunks.push(e.data);
-      }
-    };
-    
-    mediaRecorder.onstop = () => {
-      monitor.classList.remove('recording');
-      monitor.classList.add('has-recording');
-    };
-    
-    mediaRecorder.start(100);
-    isRecording = true;
-    monitor.classList.add('recording');
+    try {
+      const stream = canvas.captureStream(30);
+      mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'video/webm;codecs=vp9'
+      });
+      
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          recordedChunks.push(e.data);
+        }
+      };
+      
+      mediaRecorder.onstop = () => {
+        monitor.classList.remove('recording');
+        monitor.classList.add('has-recording');
+        stopBtn.style.display = 'none';
+        downloadBtn.style.display = 'block';
+      };
+      
+      mediaRecorder.start(100);
+      isRecording = true;
+      monitor.classList.add('recording');
+      recordBtn.style.display = 'none';
+      stopBtn.style.display = 'block';
+      downloadBtn.style.display = 'none';
+    } catch (error) {
+      console.error('Error starting recording:', error);
+      alert('Failed to start recording. Please make sure your device supports video recording.');
+    }
   }
   
   function stopRecording() {
-    mediaRecorder.stop();
-    isRecording = false;
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+      mediaRecorder.stop();
+      isRecording = false;
+      recordBtn.style.display = 'block';
+    }
   }
   
-  function downloadRecording() {
+  async function downloadRecording() {
     const blob = new Blob(recordedChunks, { type: 'video/webm' });
-    if (/Mobi|Android|iPad|iPhone/i.test(navigator.userAgent)) {
-      window.downloadVideo(blob, 'ascii-recording.webm');
-      return;
-    }
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    document.body.appendChild(a);
-    a.style.display = 'none';
-    a.href = url;
-    a.download = 'ascii-recording.webm';
-    a.click();
     
-    setTimeout(() => {
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    }, 100);
+    try {
+      // Ask for download permission
+      if (!window.confirm('Do you want to download the recorded video?')) {
+        return;
+      }
+
+      if (/Mobi|Android|iPad|iPhone/i.test(navigator.userAgent)) {
+        window.downloadVideo(blob, 'ascii-recording.webm');
+        return;
+      }
+      
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      document.body.appendChild(a);
+      a.style.display = 'none';
+      a.href = url;
+      a.download = 'ascii-recording.webm';
+      a.click();
+      
+      setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }, 100);
+    } catch (error) {
+      console.error('Error downloading recording:', error);
+      alert('Failed to download recording. Please try again.');
+    }
   }
 }
 
