@@ -1,22 +1,370 @@
+:root {
+  --monitor-color: #2b2b2b;
+  --screen-color: #000000;
+  --text-color: #00ff00;
+  --scanline-color: rgba(0, 255, 0, 0.1);
+  --record-color: #ff0000;
+}
+
 html, body {
   margin: 0;
   padding: 0;
-  line-height: 10pt;
-  background-color: black;
-  color:green;
+  min-height: 100vh;
+  background: linear-gradient(45deg, #1a1a1a, #2d2d2d);
+  color: var(--text-color);
   font-family: 'Courier New', Courier, monospace;
   font-size: 12pt;
-  position: relative;
-  left: 100px;
-  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  -webkit-text-size-adjust: 100%;
 }
 
-canvas {
+.container {
+  padding: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.monitor {
+  background: var(--monitor-color);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 
+    0 0 0 8px #1a1a1a,
+    0 0 30px rgba(0, 255, 0, 0.2),
+    inset 0 0 30px rgba(0, 0, 0, 0.8);
+  margin: 0 auto;
+}
+
+.monitor-top {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 0 30px;
+}
+
+.led {
+  width: 12px;
+  height: 12px;
+  background: #ff0000;
+  border-radius: 50%;
+  box-shadow: 0 0 15px #ff0000;
+  animation: blink 2s infinite;
+  flex-shrink: 0;
+}
+
+.brand {
+  margin-left: 25px;
+  margin-right: auto;
+  color: #888;
+  font-size: 18px;
+  text-shadow: 0 0 5px rgba(136, 136, 136, 0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.record-status {
+  color: var(--record-color);
+  font-size: 16px;
+  display: none;
+  animation: blink 1s infinite;
+  margin-left: 20px;
+}
+
+.recording .record-status {
   display: block;
 }
 
-/* video{
+.screen {
+  background: var(--screen-color);
+  border: 15px solid #1a1a1a;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  padding: 30px;
+  min-width: 300px;
+  min-height: 200px;
+  max-width: 100%;
+  box-sizing: border-box;
+  aspect-ratio: 4/3;
+}
 
-  width: 88px;
-  height: 88px;
-} */
+.scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    transparent 50%,
+    var(--scanline-color) 51%
+  );
+  background-size: 100% 4px;
+  animation: scan 10s linear infinite;
+  pointer-events: none;
+}
+
+.ascii-container {
+  position: relative;
+  z-index: 1;
+  animation: textFlicker 0.1s infinite;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.monitor-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+  padding: 0 30px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.controls {
+  display: flex;
+  gap: 20px;
+}
+
+.control-button {
+  width: 50px;
+  height: 50px;
+  background: #1a1a1a;
+  border-radius: 50%;
+  border: 3px solid #333;
+  flex-shrink: 0;
+  color: var(--text-color);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow: 0 0 5px var(--text-color);
+}
+
+.control-button:hover {
+  background: #2a2a2a;
+  border-color: var(--text-color);
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+}
+
+.control-button:active {
+  transform: scale(0.95);
+}
+
+.record-btn {
+  color: var(--record-color);
+  text-shadow: 0 0 5px var(--record-color);
+}
+
+.recording .record-btn {
+  background: var(--record-color);
+  color: white;
+  border-color: var(--record-color);
+  animation: pulse 1s infinite;
+}
+
+.stop-btn, .download-btn {
+  display: none;
+}
+
+.recording .stop-btn {
+  display: flex;
+}
+
+.has-recording .download-btn {
+  display: flex;
+}
+
+.speaker {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.speaker-line {
+  width: 40px;
+  height: 3px;
+  background: #333;
+}
+
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes textFlicker {
+  0%, 100% { opacity: 1; }
+  98% { opacity: 1; }
+  99% { opacity: 0.8; }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+}
+
+/* Extra Large screens */
+@media (min-width: 1600px) {
+  .container {
+    max-width: 1400px;
+  }
+  
+  .screen {
+    min-width: 800px;
+    min-height: 600px;
+  }
+  
+  .monitor {
+    padding: 40px;
+  }
+  
+  .brand {
+    font-size: 22px;
+  }
+  
+  .control-button {
+    width: 60px;
+    height: 60px;
+    font-size: 16px;
+  }
+}
+
+/* Large screens */
+@media (min-width: 1200px) and (max-width: 1599px) {
+  .screen {
+    min-width: 700px;
+    min-height: 525px;
+  }
+  
+  .monitor {
+    padding: 35px;
+  }
+  
+  .brand {
+    font-size: 20px;
+  }
+  
+  .control-button {
+    width: 55px;
+    height: 55px;
+    font-size: 15px;
+  }
+}
+
+/* Medium screens */
+@media (max-width: 1199px) {
+  .container {
+    padding: 10px;
+  }
+  
+  .monitor {
+    padding: 15px;
+  }
+  
+  .screen {
+    min-width: 400px;
+    min-height: 300px;
+    padding: 15px;
+  }
+  
+  .control-button {
+    width: 35px;
+    height: 35px;
+    font-size: 11px;
+  }
+}
+
+/* Small screens */
+@media (max-width: 600px) {
+  .container {
+    padding: 5px;
+  }
+  
+  .monitor {
+    padding: 10px;
+  }
+  
+  .screen {
+    min-width: 280px;
+    min-height: 210px;
+    padding: 10px;
+    border-width: 5px;
+  }
+  
+  .brand {
+    font-size: 12px;
+  }
+  
+  .control-button {
+    width: 30px;
+    height: 30px;
+    font-size: 10px;
+  }
+  
+  .monitor-top,
+  .monitor-bottom {
+    padding: 0 10px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 320px) {
+  .screen {
+    min-width: 240px;
+    min-height: 180px;
+    padding: 5px;
+  }
+  
+  .brand {
+    font-size: 10px;
+  }
+  
+  .control-button {
+    width: 25px;
+    height: 25px;
+    font-size: 9px;
+  }
+}
+
+canvas {
+  display: none;
+}
+
+video {
+  position: absolute;
+  left: -9999px;
+}
+
+/* Touch device optimizations */
+@media (hover: none) {
+  .container {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .screen {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .control-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}

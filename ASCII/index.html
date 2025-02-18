@@ -3,18 +3,37 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Sketch</title>
-
+    <title>ASCII Retro Cam</title>
     <link rel="stylesheet" type="text/css" href="style.css">
-
     <script src="libraries/p5.min.js"></script>
     <script src="libraries/p5.sound.min.js"></script>
   </head>
-
   <body>
-    
+    <div class="container">
+      <div class="monitor">
+        <div class="monitor-top">
+          <div class="led"></div>
+          <div class="brand">ASCII-VISION 2000</div>
+          <div class="record-status">●REC</div>
+        </div>
+        <div class="screen">
+          <div class="scanline"></div>
+          <div class="ascii-container"></div>
+        </div>
+        <div class="monitor-bottom">
+          <div class="controls">
+            <button class="control-button record-btn" title="Start Recording">REC</button>
+            <button class="control-button stop-btn" title="Stop Recording">⬛</button>
+            <button class="control-button download-btn" title="Download Recording">⤓</button>
+          </div>
+          <div class="speaker">
+            <div class="speaker-line"></div>
+            <div class="speaker-line"></div>
+            <div class="speaker-line"></div>
+          </div>
+        </div>
+      </div>
+    </div>
     <script src="sketch.js"></script>
- 
   </body>
 </html>
