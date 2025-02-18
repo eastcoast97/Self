@@ -21,6 +21,23 @@ function calculateDimensions() {
   };
 }
 
+if (/Mobi|Android|iPad|iPhone/i.test(navigator.userAgent)) {
+  // Mobile-friendly download function for recorded videos
+  window.downloadVideo = function(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 100);
+  };
+  console.log("Mobile device detected. Mobile recording and download enabled.");
+}
 function setup() {
   noCanvas();
   video = createCapture(VIDEO);
@@ -105,6 +122,10 @@ function setupRecordingControls() {
   
   function downloadRecording() {
     const blob = new Blob(recordedChunks, { type: 'video/webm' });
+    if (/Mobi|Android|iPad|iPhone/i.test(navigator.userAgent)) {
+      window.downloadVideo(blob, 'ascii-recording.webm');
+      return;
+    }
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     document.body.appendChild(a);
